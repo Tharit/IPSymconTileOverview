@@ -1,0 +1,12 @@
+{
+    "id": "{6E20B1A7-E59F-49D5-9934-199F7025055B}",
+    "name": "Tile Icon Counter",
+    "author": "Martin Kleinhans",
+    "url": "https://github.com/tharit/IPSymconTileIconCounter",
+    "compatibility": {
+        "version": "7.1"
+    },
+    "version": "1.0",
+    "build": 1,
+    "date": 1
+}

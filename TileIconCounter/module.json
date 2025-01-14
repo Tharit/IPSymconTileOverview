@@ -1,0 +1,12 @@
+{
+	"id": "{8BE98107-FC0F-4636-8A51-C5EA06CE5EED}",
+	"name": "TileIconCounter",
+	"type": 3,
+	"vendor": "MK",
+	"aliases": [],
+	"parentRequirements": [],
+	"childRequirements": [],
+	"implemented": [],
+	"prefix": "Tile",
+    "url": "https://github.com/tharit/IPSymconTileIconCounter"
+}
