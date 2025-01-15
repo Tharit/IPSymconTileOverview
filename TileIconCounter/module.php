@@ -23,6 +23,7 @@ class TileIconCounter extends IPSModule
     public function RequestAction($Ident, $Value)
     {
         if($Ident === 'Data') {
+            $this->SetValue('Data', $Value);
             $this->UpdateVisualizationValue($this->GetFullUpdateMessage());
         }
     }
