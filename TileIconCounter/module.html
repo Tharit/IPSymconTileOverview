@@ -90,8 +90,8 @@
             const decodedData = JSON.parse(data);
 
             let html = '';
-            for(let i = 0, n = data.items.length; i<n; i++) {
-                const item = data.items[i];
+            for(let i = 0, n = decodedData.items.length; i<n; i++) {
+                const item = decodedData.items[i];
                 html += `
 <div class="item">
     <div class="name">${item.name}</div>
