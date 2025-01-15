@@ -11,6 +11,7 @@ class TileIconCounter extends IPSModule
          $this->SetVisualizationType(1);
 
          $this->RegisterVariableString("Data", "Data", "", 0);
+         $this->EnableAction("Data");
     }
 
     public function ApplyChanges() {
@@ -19,12 +20,10 @@ class TileIconCounter extends IPSModule
         $this->UpdateVisualizationValue($this->GetFullUpdateMessage());
     }
 
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data) {
-        //if ($SenderID === $this->ReadPropertyInteger($counterProperty)) {
-        switch ($Message) {
-            case VM_UPDATE:
-                $this->UpdateVisualizationValue($this->GetFullUpdateMessage());
-                break;
+    public function RequestAction($Ident, $Value)
+    {
+        if($Ident === 'Data') {
+            $this->UpdateVisualizationValue($this->GetFullUpdateMessage());
         }
     }
 
