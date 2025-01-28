@@ -25,6 +25,27 @@ class TileIconCounter extends IPSModule
         if($Ident === 'Data') {
             $this->SetValue('Data', $Value);
             $this->UpdateVisualizationValue($this->GetFullUpdateMessage());
+        } else {
+            $adjust = strpos($Ident, 'adjust:') === 0;
+            if($adjust) {
+                $Ident = explode(':', $Ident)[1];
+            }
+
+            // resolve links first
+            $obj = IPS_GetObject($Ident);
+                if($obj['ObjectType'] === 6) {
+                    $link = @IPS_GetLink($Ident);
+                    if(!$link) return;
+                    $Ident = $link['TargetID'];
+            }
+
+            $obj = IPS_GetObject($Ident);
+            if($obj['ObjectType'] === 3) {
+            IPS_RunScript($Ident);
+            } else if($obj['ObjectType'] === 2) {
+            if($adjust) $Value = GetValue($Ident) + $Value;
+                RequestAction($Ident, $Value);
+            }
         }
     }
 

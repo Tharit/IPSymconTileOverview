@@ -19,6 +19,15 @@
 
         }
 
+	.header {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 50px;
+		background-color: #222;
+	}
+
         .container {
             overflow-y: hidden;
             overflow-x: auto;
@@ -29,11 +38,12 @@
             display: flex;
             align-items: center;
             justify-content: start;
+	    padding-top: 50px;
         }
 
         .item {
             height: 100%;
-            max-width: 150px;
+            max-width: 125px;
 
             font-size: 35px;
 
@@ -43,21 +53,20 @@
             justify-content: start;
             align-items: center;
 
-            padding-left: 20px;
-            padding-right: 20px;
-            padding-top: 10px;
-
+            padding-left: 15px;
+            padding-right: 15px;
+	    padding-top: 5px;
             overflow: hidden;
         }
 
         .item:not(:first-child) {
-            border-left: 3px dashed #222;
+            border-left: 1px dashed #222;
         }
 
         .name {
             color: gray;
-            padding-bottom: 10px;
-            font-size: 15px;
+            padding-bottom: 5px;
+            font-size: 10px;
             text-align: center;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -66,7 +75,7 @@
         }
 
         .label {
-            font-size: 30px;
+            font-size: 20px;
             text-align: center;
             max-height: 40px;
             overflow: hidden;
@@ -77,34 +86,114 @@
             line-clamp: 2;
             -webkit-box-orient: vertical;
             margin-top: 5px;
+	    text-wrap: balance;
         }
 
         .label.long {
-            font-size: 15px;
+            font-size: 10px;
         }
     </style>
     <script>
+	let tree = [];
+	let path = '';
+
         function handleMessage(data) {
+            tree = JSON.parse(data);
+	    
+            render();
+        }
+	
+	function getNode() {
+	    if(!path) return tree;
+	    let parts = path.split('/');
+	    let node = tree;
+            for(let i = 0, n = parts.length; i < n; i++) {
+		let id = parts[i];
+		let child = node.childs && node.childs.find(child => child.id == id) || null;
+		if(!child || !child.childs) {
+		    path = parts.slice(0, i).join('/');	
+		    return node;
+	        }
+		node = child;
+	    }
+	    return node;
+	}
+	
+        function selectNode(idx) {
+	    // back button
+	    if(idx < 0) {
+		if(!path) return;
+
+		let parts = path.split('/');
+		parts.pop();
+		path = parts.join('/');
+		render();
+		return;
+	    }
+
+            let node = getNode(path);
+	    if(!node || !node.childs[idx]) return;
+            let selected = node.childs[idx];
+
+	    if(selected.action) {
+		for(let key in selected.action) {
+		    requestAction(key, selected.action[key]);
+		}
+		render();
+		return;
+	    }
+	
+            if(!selected.childs) return;
+            
+            if(path) path += '/';
+	    path += selected.id;
+	    render();
+	}
+
+	function render() {
             const container = document.getElementById('content');
-
-            const decodedData = JSON.parse(data);
-
+	    let scrollLeft = container.scrollLeft;
+	    let node = getNode();
             let html = '';
-            for(let i = 0, n = decodedData.items.length; i<n; i++) {
-                const item = decodedData.items[i];
+
+	    
+	    if(path) {
                 html += `
-<div class="item">
+<div class="item" onclick="selectNode(-1)">
+    <div class="name">&nbsp;</div>
+    <i class="fa-light fa-chevron-left fa-sm"></i>
+   <div class="label">&nbsp;</div>
+</div>`;
+            }
+
+            for(let i = 0, n = node && node.childs.length || 0; i<n; i++) {
+                const item = node.childs[i];
+		let labelCls = '';
+		if(+item.label != item.label) {
+		    labelCls = ' long';
+	        }
+		let icon = item.icon;
+		//if(item.loading) {
+		// icon = 'spinner fa-spin-pulse';
+		//}
+                html += `
+<div class="item" onclick="selectNode(${i})">
     <div class="name">${item.name}</div>
-    <i class="fa-light fa-${item.icon} fa-xl"></i>
-    <div class="label long">${item.label}</div>
+    <i class="fa-light fa-${icon} fa-sm"></i>
+   <div class="label${labelCls} ">${item.label}</div>
 </div>`;
             }
             container.innerHTML = html;
+
+	    setTimeout(() => {
+		    container.scrollLeft = scrollLeft;
+	    }, 0);
         }
     </script>
 </head>
 
 <body>
+    <div class="header"></div>
     <div class="container" id="content">
         No items
     </div>
